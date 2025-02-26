@@ -1,6 +1,6 @@
 import asyncio
 import logging
-import redis
+import redis.asyncio as redis
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.bot import DefaultBotProperties
