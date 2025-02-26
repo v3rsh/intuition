@@ -4,7 +4,7 @@ import redis
 
 from aiogram import Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
-from aiogram.client.bot import Bot, DefaultBotProperties
+from aiogram.client.bot import Bot
 
 from config import BOT_TOKEN, REDIS_HOST, REDIS_PORT
 from database import init_db
@@ -13,7 +13,6 @@ from handlers.quiz import router as quiz_router
 from handlers.wallpapers import router as wallpaper_router
 from handlers.results import router as results_router
 
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -21,12 +20,8 @@ async def main():
     r = redis.Redis(host=REDIS_HOST, port=int(REDIS_PORT), decode_responses=True)
     storage = RedisStorage(redis=r)
 
-    # Инициализируем бота с нужным parse_mode:
-    bot = Bot(
-        token=BOT_TOKEN,
-        default=DefaultBotProperties(parse_mode="HTML")
-    )
-    
+    bot = Bot(token=BOT_TOKEN)  # Убрали DefaultBotProperties
+
     dp = Dispatcher(storage=storage)
 
     # Подключаем роутеры
