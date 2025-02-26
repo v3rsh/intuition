@@ -22,10 +22,7 @@ async def main():
     storage = RedisStorage(redis=r)
 
     # Если хотите глобальный parse_mode, например MarkdownV2:
-    bot = Bot(
-        token=BOT_TOKEN,
-        default=DefaultBotProperties(parse_mode="MarkdownV2")
-    )
+    bot = Bot(token=BOT_TOKEN)
     
     dp = Dispatcher(storage=storage)
 
