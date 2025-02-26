@@ -1,7 +1,8 @@
 from aiogram.fsm.state import State, StatesGroup
 
-class BotStates(StatesGroup):
-    MAIN_MENU = State()           # Главное меню
-    QUIZ = State()                # Прохождение викторины
-    WALLPAPER_CHOOSE = State()    # Выбор обоев
-    WALLPAPER_DOWNLOAD = State()  # Загрузка/скачивание обоев
+class BotState(StatesGroup):
+    MAIN_MENU = State()   # Главное меню
+    QUIZ = State()        # Режим викторины
+    CHOOSE = State()      # Выбор обоев (мелкие)
+    DOWNLOAD = State()    # Скачивание/отправка крупных обоев
+    RESULT = State()      # Результат (когда прогресс=10)

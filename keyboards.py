@@ -6,89 +6,79 @@ from aiogram.types import (
     InlineKeyboardButton
 )
 
-# — Приветственное меню (После /start):
-def start_menu():
-    keyboard = [
-        [KeyboardButton(text="проверить интуицию")],
-        [KeyboardButton(text="сейчас не до игр")]
-    ]
-    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
+def main_menu_kb():
+    """
+    Главное меню: две кнопки
+    [проверить интуицию] [сейчас не до игр]
+    """
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton(text="проверить интуицию")],
+            [KeyboardButton(text="сейчас не до игр")]
+        ],
+        resize_keyboard=True
+    )
 
-
-# — Клавиатура после прохождения теста
-def after_test_menu():
-    keyboard = [
-        [KeyboardButton(text="результаты"), KeyboardButton(text="обои")]
-    ]
-    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
-
-
-# — Клавиатура для выбора обоев
 def wallpapers_menu():
-    keyboard = [
-        [KeyboardButton(text="обои1"), KeyboardButton(text="обои2")],
-        [KeyboardButton(text="обои3"), KeyboardButton(text="обои4")],
-        [KeyboardButton(text="в начало")]
-    ]
-    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
-
-
-# — Клавиатура после выбора обоев
-def wallpaper_download_menu():
-    keyboard = [
-        [KeyboardButton(text="скачать ещё"), KeyboardButton(text="в начало")]
-    ]
-    return ReplyKeyboardMarkup(keyboard=keyboard, resize_keyboard=True)
-
-
-def generate_answers_keyboard(correct_answer: str, answers: list):
     """
-    Генерация клавиатуры с 4 ответами + кнопка "в начало".
-    answers: ['Answer1', 'Answer2', 'Answer3'] без correct
-    correct_answer: 'Correct'
-    
-    Итог: 4 варианта (включая correct), расположенные рандомно,
-    + 5-я кнопка "в начало" всегда снизу.
+    Для BotState.CHOOSE: 4 варианта + в начало
     """
-    all_answers = answers + [correct_answer]
-    random.shuffle(all_answers)  # перемешиваем 4 варианта
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton("обои1"), KeyboardButton("обои2")],
+            [KeyboardButton("обои3"), KeyboardButton("обои4")],
+            [KeyboardButton("в начало")]
+        ],
+        resize_keyboard=True
+    )
 
-    # Создаём раскладку 2x2 для 4 ответов
-    # Пример: [ans1, ans2]
-    #         [ans3, ans4]
+def wallpapers_download_menu():
+    """
+    Для BotState.DOWNLOAD: [Выбрать другие обои][в начало]
+    """
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [KeyboardButton("Выбрать другие обои"), KeyboardButton("в начало")]
+        ],
+        resize_keyboard=True
+    )
+
+def generate_quiz_answers(correct_answer: str, answers: list):
+    """
+    4 варианта (correct + 3 answers), перемешанные.
+    5-я кнопка: в начало.
+    """
+    variants = answers + [correct_answer]
+    random.shuffle(variants)
+
     keyboard_layout = []
     row = []
-    for i, ans in enumerate(all_answers, start=1):
+    for i, ans in enumerate(variants, start=1):
         row.append(KeyboardButton(text=ans))
         if i % 2 == 0:
             keyboard_layout.append(row)
             row = []
-    # Возможно, если вариантов 4 — у нас 2 ряда; row уже пустой
+    if row:
+        keyboard_layout.append(row)
 
-    # Добавляем кнопку "в начало"
-    keyboard_layout.append([KeyboardButton(text="в начало")])
+    # Кнопка 'в начало' в отдельной строке
+    keyboard_layout.append([KeyboardButton("в начало")])
 
-    return ReplyKeyboardMarkup(keyboard=keyboard_layout, resize_keyboard=True)
+    return ReplyKeyboardMarkup(
+        keyboard=keyboard_layout,
+        resize_keyboard=True
+    )
 
-def final_inline_keyboard():
+def result_inline_keyboard():
     """
-    Финальный экран: In-line кнопки [Ссылка][в начало]
+    Финальная inline-клавиатура (2 кнопки):
+    [Ссылка] [в начало (callback_data='to_main')]
     """
-    markup = InlineKeyboardMarkup(inline_keyboard=[
-        [
-            InlineKeyboardButton(text="Ссылка", url="https://google.com"),
-            InlineKeyboardButton(text="В начало", callback_data="go_to_start")
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(text="Ссылка", url="https://example.com"),
+                InlineKeyboardButton(text="в начало", callback_data="to_main")
+            ]
         ]
-    ])
-    return markup
-
-def results_inline_keyboard():
-    """
-    Кнопка [Ссылка] для результатов.
-    """
-    markup = InlineKeyboardMarkup(inline_keyboard=[
-        [
-            InlineKeyboardButton(text="Ссылка", url="https://google.com")
-        ]
-    ])
-    return markup
+    )
