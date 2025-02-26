@@ -13,7 +13,7 @@ async def show_results(message: Message):
         await message.answer("Ошибка: пользователь не найден.")
         return
     
-    result = user[4]  # индекс 4 = result (число правильных ответов)
+    result = user[4]  # индекс 4 = result
     await message.answer(
         f"Ваш результат: {result} правильных ответов из 10",
         reply_markup=results_inline_keyboard()

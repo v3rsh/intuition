@@ -2,7 +2,7 @@ from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
-from states import StartState, TestState
+from states import BotStates
 from database import (get_user_by_id, get_question, update_user_progress, 
                       update_user_result)
 from keyboards import generate_answers_keyboard, after_test_menu, start_menu
@@ -10,11 +10,11 @@ from utils import is_correct_answer
 
 router = Router()
 
-@router.message(F.text == "проверить интуицию")
+@router.message(BotStates.MAIN_MENU, F.text == "проверить интуицию")
 async def start_quiz(message: Message, state: FSMContext):
     """
-    Если пользователь нажимает "проверить интуицию" с главного меню
-    - нужно отправить первый/текущий вопрос, если ещё не пройден тест.
+    Пользователь нажал "проверить интуицию" в главном меню.
+    Проверяем, где он остановился в викторине, отправляем нужный вопрос.
     """
     user_id = str(message.from_user.id)
     user = await get_user_by_id(user_id)
@@ -34,21 +34,21 @@ async def start_quiz(message: Message, state: FSMContext):
             progress = 1
             await update_user_progress(user_id, progress)
         
-        # Устанавливаем состояние
-        await state.set_state(TestState.question_in_progress)
+        # Переводим пользователя в состояние QUIZ
+        await state.set_state(BotStates.QUIZ)
         
         # Отправляем текущий вопрос
         await send_question(message, user_id, progress)
     else:
-        # Если почему-то пользователя нет, создадим
-        # (обычно этого не должно случиться, т.к. при /start создаём)
+        # Если почему-то пользователя нет, сообщаем ошибку
         await message.answer("Ошибка: пользователь не найден в БД.")
         return
 
-@router.message(TestState.question_in_progress)
+@router.message(BotStates.QUIZ)
 async def handle_quiz_answers(message: Message, state: FSMContext):
     """
-    Обрабатываем 4 варианта ответа и кнопку 'в начало'.
+    Обрабатываем 4 варианта ответа и кнопку 'в начало'
+    при состоянии QUIZ.
     """
     user_id = str(message.from_user.id)
     user = await get_user_by_id(user_id)
@@ -65,15 +65,15 @@ async def handle_quiz_answers(message: Message, state: FSMContext):
     
     # Если пользователь жмёт 'в начало'
     if message.text == "в начало":
-        # Не сбрасываем прогресс, просто переводим state в StartState
-        await state.set_state(StartState.waiting_for_action)
+        # Не сбрасываем прогресс, просто переводим state -> MAIN_MENU
+        await state.set_state(BotStates.MAIN_MENU)
         await message.answer(
             "Ок, вернулись в начало.",
             reply_markup=start_menu()
         )
         return
     
-    # Иначе — это один из вариантов ответа
+    # Иначе — пользователь выбрал один из 4 вариантов ответа
     question_data = await get_question(progress)
     correct_answer = question_data[2]  # индекс 2 = correct
     
@@ -90,7 +90,7 @@ async def handle_quiz_answers(message: Message, state: FSMContext):
         # Отправить следующий вопрос
         await send_question(message, user_id, next_progress)
     else:
-        # Все 10 вопросов пройдены, устанавливаем progress = 11
+        # Все 10 вопросов пройдены, ставим progress=11
         await update_user_progress(user_id, 11)
         await message.answer(
             "Поздравляем, вы прошли викторину!",
@@ -106,12 +106,10 @@ async def send_question(message: Message, user_id: str, question_number: int):
         await message.answer("Ошибка: нет данных по вопросу.")
         return
     
-    # question_data = (number, photo, correct, answer1, answer2, answer3)
     photo_path = question_data[1]
     correct_answer = question_data[2]
     ans1, ans2, ans3 = question_data[3], question_data[4], question_data[5]
 
-    # Собираем и отправляем фото (можно поменять метод на send_document или send_photo)
     with open(photo_path, 'rb') as photo_file:
         await message.answer_photo(
             photo=photo_file,
