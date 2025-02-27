@@ -1,10 +1,10 @@
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile, InputMediaPhoto, InputMedia
 from aiogram.fsm.context import FSMContext
 
 from states import BotState
 from database import get_user_by_id, update_user_progress
-from keyboards import main_menu_kb, wallpapers_menu
+from keyboards import main_menu_kb
 from keyboards import generate_quiz_answers
 from keyboards import result_inline_keyboard
 from utils import is_correct_answer
@@ -42,13 +42,56 @@ async def main_menu_check_intuition(message: Message, state: FSMContext):
 @router.message(BotState.MAIN_MENU, F.text == "сейчас не до игр")
 async def main_menu_wallpapers(message: Message, state: FSMContext):
     """
-    Пользователь выбрал 'сейчас не до игр',
-    переходим в состояние CHOOSE обоев.
+    Пользователь выбрал 'сейчас не до игр'.
+    1) Ставим состояние CHOOSE
+    2) Отправляем все миниатюры (Pics.pic)
+    3) Показываем клавиатуру (кнопки = Pics.button + 'в начало')
     """
     await state.set_state(BotState.CHOOSE)
+
+    # 1) Получаем список обоев
+    rows = await get_all_pics()  
+    # rows – список [(id, button, pic, file), ...]
+
+    # 2) Отправляем миниатюры. Можно:
+    #    A) медиа-группой (до 10 штук в группе),
+    #    B) по одному сообщению на картинку,
+    #    C) или вообще без отправки картинок — решайте сами.
+
+    # --- Вариант A: отправляем 1 медиа-группу (до 10 штук) ---
+    # (Если обоев больше 10, придётся делать несколько групп)
+
+    if not rows:
+        await message.answer("Обои пока не добавлены в базу.")
+        return
+
+    media = []
+    for i, (pic_id, button, pic_url, file_url) in enumerate(rows):
+        # Собираем InputMediaPhoto
+        # caption можно прописать для каждого, например:
+        caption = f"Обои: {button}"
+        # Если pic_url это http-URL:
+        if pic_url.startswith("http"):
+            media.append(InputMediaPhoto(media=pic_url, caption=caption))
+        else:
+            # Локальный файл
+            media.append(InputMediaPhoto(media=FSInputFile(pic_url), caption=caption))
+        
+        # Если количество превысит 10, придётся рвать на части
+        if i == 9:
+            break
+
+    await message.answer_media_group(media=media)
+
+    # Если у вас >10 картинок, логика: отправить их в нескольких группах:
+    # (Можно сделать "порции" по 10)
+
+    # 3) Динамическая клавиатура (кнопки = button)
+    all_buttons = [row[1] for row in rows]  # row[1] = button
+    kb = dynamic_wallpapers_menu(all_buttons)
     await message.answer(
         "Выберите обои из списка:",
-        reply_markup=wallpapers_menu()
+        reply_markup=kb
     )
 
 async def send_quiz_question(message: Message, question_number: int):

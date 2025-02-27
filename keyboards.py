@@ -19,18 +19,26 @@ def main_menu_kb():
         resize_keyboard=True
     )
 
-def wallpapers_menu():
+def dynamic_wallpapers_menu(button_texts: list[str]) -> ReplyKeyboardMarkup:
     """
-    Для BotState.CHOOSE: 4 варианта + в начало
+    Из списка button_texts создаём клавиатуру:
+    2 кнопки в строке, последняя строка - ["в начало"].
     """
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton("обои1"), KeyboardButton("обои2")],
-            [KeyboardButton("обои3"), KeyboardButton("обои4")],
-            [KeyboardButton("в начало")]
-        ],
-        resize_keyboard=True
-    )
+    keyboard_rows = []
+    row = []
+    for i, text in enumerate(button_texts, start=1):
+        row.append(KeyboardButton(text))
+        if i % 2 == 0:
+            keyboard_rows.append(row)
+            row = []
+    if row:
+        keyboard_rows.append(row)
+
+    # Добавляем кнопку 'в начало'
+    keyboard_rows.append([KeyboardButton("в начало")])
+
+    return ReplyKeyboardMarkup(keyboard=keyboard_rows, resize_keyboard=True)
+
 
 def wallpapers_download_menu():
     """

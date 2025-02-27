@@ -110,3 +110,11 @@ async def get_pic_by_button(button_text: str):
     async with aiosqlite.connect(DB_PATH) as db:
         cursor = await db.execute('SELECT * FROM Pics WHERE button = ?', (button_text,))
         return await cursor.fetchone()
+
+async def get_all_pics():
+    """
+    Возвращает список кортежей (id, button, pic, file) из таблицы Pics.
+    """
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute("SELECT id, button, pic, file FROM Pics")
+        return await cursor.fetchall()
