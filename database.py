@@ -68,8 +68,8 @@ async def init_db():
                 reader = csv.DictReader(f)
                 for r in reader:
                     await db.execute('''
-                        INSERT INTO Pics (button, pic, file)
-                        VALUES (:button, :pic, :file)
+                        INSERT INTO Pics (id, button, pic, file)
+                        VALUES (:id, :button, :pic, :file)
                     ''', r)
         
         await db.commit()
