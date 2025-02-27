@@ -53,6 +53,19 @@ async def choose_wallpaper_handler(message: Message, state: FSMContext):
 
 @router.message(BotState.DOWNLOAD)
 async def download_wallpaper_handler(message: Message, state: FSMContext):
+    from database import get_user_by_id, update_user_loads
+
+    user_id = str(message.from_user.id)
+    user = await get_user_by_id(user_id)
+    if not user:
+        await message.answer("Ошибка: пользователь не найден. Нажмите /start")
+        return
+    # Индекс поля loads (если в таблице Users столбцы идут:
+    # number=0, userid=1, username=2, progress=3, result=4, loads=5)
+    current_loads = user[5]  # loads = user[5]
+    new_loads = current_loads + 1
+    await update_user_loads(user_id, new_loads)
+
     if message.text == "Выбрать другие обои":
         await state.set_state(BotState.CHOOSE)
         await message.answer(

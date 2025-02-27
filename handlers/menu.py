@@ -3,7 +3,7 @@ from aiogram.types import Message, FSInputFile, InputMediaPhoto, InputMedia
 from aiogram.fsm.context import FSMContext
 
 from states import BotState
-from database import get_user_by_id, update_user_progress
+from database import get_user_by_id, update_user_progress, get_all_pics
 from keyboards import main_menu_kb
 from keyboards import generate_quiz_answers
 from keyboards import result_inline_keyboard

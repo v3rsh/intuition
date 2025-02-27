@@ -2,8 +2,8 @@ import aiosqlite
 import csv
 import os
 
-DB_PATH = 'bot_database.db'
-QUESTIONS_CSV = 'questions.csv'
+DB_PATH = 'data/bot.db'
+QUESTIONS_CSV = 'data/questions.csv'
 PICS_CSV = 'pics.csv'  # Допустим, для заполнения таблицы Pics
 
 async def init_db():
@@ -19,7 +19,8 @@ async def init_db():
                 userid TEXT,
                 username TEXT,
                 progress INTEGER DEFAULT 0,  -- 0..10
-                result INTEGER DEFAULT 0     -- 0..10
+                result INTEGER DEFAULT 0,     -- 0..10
+                loads INTEGER DEFAULT 0
             )
         ''')
         
@@ -38,7 +39,7 @@ async def init_db():
         # Таблица обоев
         await db.execute('''
             CREATE TABLE IF NOT EXISTS Pics (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id INTEGER,
                 button TEXT,  -- например, 'обои1'
                 pic TEXT,     -- путь к мелкой картинке (опционально)
                 file TEXT     -- путь к большой картинке
@@ -118,3 +119,13 @@ async def get_all_pics():
     async with aiosqlite.connect(DB_PATH) as db:
         cursor = await db.execute("SELECT id, button, pic, file FROM Pics")
         return await cursor.fetchall()
+    
+    
+async def update_user_loads(user_id: str, new_loads: int):
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute('''
+            UPDATE Users
+            SET loads = ?
+            WHERE userid = ?
+        ''', (new_loads, user_id))
+        await db.commit()
