@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
 from states import BotState
-from keyboards import main_menu_kb, wallpapers_download_menu
+from keyboards import main_menu_kb, dynamic_wallpapers_menu, wallpapers_download_menu
 from database import get_pic_by_button
 
 router = Router()
@@ -48,7 +48,7 @@ async def choose_wallpaper_handler(message: Message, state: FSMContext):
     else:
         await message.answer(
             "Нужно выбрать один из четырёх вариантов или 'в начало'.",
-            reply_markup=wallpapers_menu()
+            reply_markup=dynamic_wallpapers_menu()
         )
 
 @router.message(BotState.DOWNLOAD)

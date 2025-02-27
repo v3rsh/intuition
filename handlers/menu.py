@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 
 from states import BotState
 from database import get_user_by_id, update_user_progress, get_all_pics
-from keyboards import main_menu_kb
+from keyboards import main_menu_kb, dynamic_wallpapers_menu
 from keyboards import generate_quiz_answers
 from keyboards import result_inline_keyboard
 from utils import is_correct_answer
