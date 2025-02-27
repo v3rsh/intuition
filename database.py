@@ -4,7 +4,7 @@ import os
 
 DB_PATH = 'data/bot.db'
 QUESTIONS_CSV = 'data/questions.csv'
-PICS_CSV = 'pics.csv'  # Допустим, для заполнения таблицы Pics
+PICS_CSV = 'data/wallpapers.csv'  # Допустим, для заполнения таблицы Pics
 
 async def init_db():
     """
@@ -120,7 +120,7 @@ async def get_all_pics():
         cursor = await db.execute("SELECT id, button, pic, file FROM Pics")
         return await cursor.fetchall()
     
-    
+
 async def update_user_loads(user_id: str, new_loads: int):
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute('''
