@@ -4,7 +4,8 @@ from aiogram.fsm.context import FSMContext
 
 from states import BotState
 from keyboards import main_menu_kb, dynamic_wallpapers_menu, wallpapers_download_menu
-from database import get_pic_by_button, get_all_pics
+from database import get_user_by_id, update_user_loads, get_all_pics, get_pic_by_button
+
 
 router = Router()
 
@@ -48,9 +49,7 @@ async def choose_wallpaper_handler(message: Message, state: FSMContext):
 
 @router.message(BotState.DOWNLOAD)
 async def download_wallpaper_handler(message: Message, state: FSMContext):
-    from database import get_user_by_id, update_user_loads, get_all_pics
-    from keyboards import main_menu_kb, wallpapers_download_menu, dynamic_wallpapers_menu
-
+    
     user_id = str(message.from_user.id)
     user = await get_user_by_id(user_id)
     if not user:
@@ -77,4 +76,5 @@ async def download_wallpaper_handler(message: Message, state: FSMContext):
     else:
         await message.answer(
             "Нажмите 'Выбрать другие обои' или 'в начало'.",
-          
+            reply_markup=wallpapers_download_menu()
+        )
