@@ -29,12 +29,13 @@ async def init_db():
         # Таблица вопросов
         await db.execute('''
             CREATE TABLE IF NOT EXISTS Questions (
-                number INTEGER PRIMARY KEY,
+                number INTEGER,
                 photo TEXT,
                 correct TEXT,
                 answer1 TEXT,
                 answer2 TEXT,
-                answer3 TEXT
+                answer3 TEXT,
+                question TEXT
             )
         ''')
         
@@ -57,8 +58,8 @@ async def init_db():
                 reader = csv.DictReader(f, delimiter=";")
                 for r in reader:
                     await db.execute('''
-                        INSERT INTO Questions (number, photo, correct, answer1, answer2, answer3)
-                        VALUES (:number, :photo, :correct, :answer1, :answer2, :answer3)
+                        INSERT INTO Questions (number, photo, correct, answer1, answer2, answer3, question)
+                        VALUES (:number, :photo, :correct, :answer1, :answer2, :answer3, :question)
                     ''', r)
         
         # Проверяем, есть ли данные в Pics
@@ -99,11 +100,12 @@ async def update_user_result(user_id: str, new_result: int):
 async def get_question(number: int):
     async with aiosqlite.connect(DB_PATH) as db:
         cursor = await db.execute('''
-            SELECT number, photo, correct, answer1, answer2, answer3
+            SELECT number, photo, correct, answer1, answer2, answer3, question
             FROM Questions
             WHERE number = ?
         ''', (number,))
         return await cursor.fetchone()
+
 
 async def get_pic_by_button(button_text: str):
     """
