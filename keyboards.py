@@ -9,7 +9,8 @@ from aiogram.types import (
 def main_menu_kb():
     """
     Главное меню: две кнопки
-    [проверить интуицию] [сейчас не до игр]
+    [проверить интуицию]
+    [сейчас не до игр]
     """
     return ReplyKeyboardMarkup(
         keyboard=[
@@ -33,16 +34,17 @@ def dynamic_wallpapers_menu(button_texts: list[str]) -> ReplyKeyboardMarkup:
 
 def wallpapers_download_menu():
     """
-    Для BotState.DOWNLOAD: [Выбрать другие обои][в начало]
+    Для BotState.DOWNLOAD: [Выбрать другие обои] [в начало]
     """
     return ReplyKeyboardMarkup(
         keyboard=[
-            [KeyboardButton("Выбрать другие обои"), KeyboardButton("в начало")]
+            [KeyboardButton(text="Выбрать другие обои")],
+            [KeyboardButton(text="в начало")]
         ],
         resize_keyboard=True
     )
 
-def generate_quiz_answers(correct_answer: str, answers: list):
+def generate_quiz_answers(correct_answer: str, answers: list) -> ReplyKeyboardMarkup:
     """
     4 варианта (correct + 3 answers), перемешанные.
     5-я кнопка: в начало.
@@ -50,18 +52,11 @@ def generate_quiz_answers(correct_answer: str, answers: list):
     variants = answers + [correct_answer]
     random.shuffle(variants)
 
-    keyboard_layout = []
-    row = []
-    for i, ans in enumerate(variants, start=1):
-        row.append(KeyboardButton(text=ans))
-        if i % 2 == 0:
-            keyboard_layout.append(row)
-            row = []
-    if row:
-        keyboard_layout.append(row)
+    # Клавиатура с ответами (одна кнопка в строке)
+    keyboard_layout = [[KeyboardButton(text=ans)] for ans in variants]
 
     # Кнопка 'в начало' в отдельной строке
-    keyboard_layout.append([KeyboardButton("в начало")])
+    keyboard_layout.append([KeyboardButton(text="в начало")])
 
     return ReplyKeyboardMarkup(
         keyboard=keyboard_layout,
