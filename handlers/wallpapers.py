@@ -3,7 +3,7 @@ from aiogram.types import Message
 from aiogram.fsm.context import FSMContext
 
 from states import BotState
-from keyboards import main_menu_kb, wallpapers_menu, wallpapers_download_menu
+from keyboards import main_menu_kb, wallpapers_download_menu
 from database import get_pic_by_button
 
 router = Router()
