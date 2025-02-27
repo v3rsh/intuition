@@ -1,3 +1,5 @@
+# database.py
+
 import aiosqlite
 import csv
 import os
@@ -52,7 +54,7 @@ async def init_db():
         if row_q[0] == 0 and os.path.exists(QUESTIONS_CSV):
             # Загружаем вопросы из CSV
             with open(QUESTIONS_CSV, 'r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
+                reader = csv.DictReader(f, delimiter=";")
                 for r in reader:
                     await db.execute('''
                         INSERT INTO Questions (number, photo, correct, answer1, answer2, answer3)
@@ -65,7 +67,7 @@ async def init_db():
         if row_p[0] == 0 and os.path.exists(PICS_CSV):
             # Загружаем данные обоев
             with open(PICS_CSV, 'r', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
+                reader = csv.DictReader(f, delimiter=";")
                 for r in reader:
                     await db.execute('''
                         INSERT INTO Pics (id, button, pic, file)
