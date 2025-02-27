@@ -6,7 +6,7 @@ from states import BotState
 from database import get_user_by_id, update_user_progress, update_user_result, get_question
 from keyboards import main_menu_kb, result_inline_keyboard
 from keyboards import generate_quiz_answers
-from utils import is_correct_answer
+from utils import is_correct_answer, send_question
 
 router = Router()
 
@@ -48,7 +48,7 @@ async def quiz_handler(message: Message, state: FSMContext):
         
         if new_progress <= 9:
             # Задаём следующий вопрос
-            await send_next_question(message, new_progress)
+            await send_question(message, new_progress)
         else:
             # new_progress=10 => пользователь всё прошёл
             await state.set_state(BotState.RESULT)
@@ -65,28 +65,4 @@ async def quiz_handler(message: Message, state: FSMContext):
         await message.answer(
             "Нужно выбрать один из вариантов ответа!",
             reply_markup=generate_quiz_answers(correct, answers=[question_data[3], question_data[4], question_data[5]])
-        )
-
-async def send_next_question(message: Message, question_number: int):
-    """
-    Отправляем вопрос №question_number. Аналогично тому, что делали в menu.py
-    """
-    question_data = await get_question(question_number)
-    if not question_data:
-        await message.answer("Ошибка: вопрос не найден.")
-        return
-    
-    _, photo, correct, a1, a2, a3 = question_data
-    kb = generate_quiz_answers(correct, [a1, a2, a3])
-    try:
-        with open(photo, 'rb') as ph:
-            await message.answer_photo(
-                photo=ph,
-                caption=f"Вопрос №{question_number}. Твой ответ?",
-                reply_markup=kb
-            )
-    except FileNotFoundError:
-        await message.answer(
-            text=f"Вопрос №{question_number} (файл не найден).",
-            reply_markup=kb
         )
