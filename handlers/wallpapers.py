@@ -1,10 +1,10 @@
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, FSInputFile
 from aiogram.fsm.context import FSMContext
 
 from states import BotState
 from keyboards import main_menu_kb, dynamic_wallpapers_menu, wallpapers_download_menu
-from database import get_pic_by_button
+from database import get_pic_by_button, get_all_pics
 
 router = Router()
 
@@ -15,41 +15,36 @@ async def choose_wallpaper_handler(message: Message, state: FSMContext):
         await message.answer("Возврат в главное меню.", reply_markup=main_menu_kb())
         return
     
-    # Предположим, что кнопки "обои1"..."обои4" - это поля button в таблице Pics
-    # Если пользователь нажал одно из них, найдём соответствующую запись:
+    # Ищем запись в Pics по нажатой кнопке (поле button)
     pic_record = await get_pic_by_button(message.text)
     if pic_record:
         # pic_record = (id, button, pic, file)
-        # Переходим в BotState.DOWNLOAD
         await state.set_state(BotState.DOWNLOAD)
         big_file_path = pic_record[3]
-        
-        # Отправляем big_file_path (допустим, это может быть URL или локальный путь)
         try:
-            # Если это URL:
-            if big_file_path.startswith("http"):
-                await message.answer_document(
-                    document=big_file_path,
-                    caption="Вот файл в большом разрешении",
-                    reply_markup=wallpapers_download_menu()
-                )
-            else:
-                with open(big_file_path, 'rb') as f:
-                    await message.answer_document(
-                        document=f,
-                        caption="Вот файл в большом разрешении",
-                        reply_markup=wallpapers_download_menu()
-                    )
+            await message.answer_document(
+                document=FSInputFile(big_file_path),
+                caption="Вот файл в большом разрешении",
+                reply_markup=wallpapers_download_menu()
+            )
         except FileNotFoundError:
+            # Если файл не найден, снова показываем клавиатуру с динамическими кнопками
+            all_pics = await get_all_pics()
+            all_buttons = [r[1] for r in all_pics]
             await message.answer(
                 "Файл с обоями не найден, попробуйте другой вариант.",
-                reply_markup=wallpapers_menu()
+                reply_markup=dynamic_wallpapers_menu(all_buttons)
             )
     else:
+        # Если запись не найдена, формируем клавиатуру из всех доступных вариантов
+        all_pics = await get_all_pics()
+        all_buttons = [r[1] for r in all_pics]
         await message.answer(
-            "Нужно выбрать один из четырёх вариантов или 'в начало'.",
-            reply_markup=dynamic_wallpapers_menu()
+            "Нужно выбрать один из вариантов или 'в начало'.",
+            reply_markup=dynamic_wallpapers_menu(all_buttons)
         )
+
+
 
 @router.message(BotState.DOWNLOAD)
 async def download_wallpaper_handler(message: Message, state: FSMContext):
