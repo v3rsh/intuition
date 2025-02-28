@@ -6,6 +6,7 @@ from aiogram.fsm.context import FSMContext
 from states import BotState
 from database import get_user_by_id, create_user
 from keyboards import main_menu_kb
+from utils import send_welcome_message
 
 router = Router()
 
@@ -21,7 +22,4 @@ async def cmd_start(message: Message, state: FSMContext):
 
     # Ставим состояние MAIN_MENU
     await state.set_state(BotState.MAIN_MENU)
-    await message.answer(
-        "Привет! Добро пожаловать в нашу викторину «Интуиция».",
-        reply_markup=main_menu_kb()
-    )
+    await send_welcome_message()
