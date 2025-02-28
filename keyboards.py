@@ -15,7 +15,7 @@ def main_menu_kb():
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="проверить интуицию")],
-            [KeyboardButton(text="сейчас не до игр")]
+            [KeyboardButton(text="пока не до игр...")]
         ],
         resize_keyboard=True
     )
