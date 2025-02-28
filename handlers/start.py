@@ -22,4 +22,5 @@ async def cmd_start(message: Message, state: FSMContext):
 
     # Ставим состояние MAIN_MENU
     await state.set_state(BotState.MAIN_MENU)
-    await send_welcome_message()
+    await send_welcome_message(message)
+    return
