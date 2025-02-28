@@ -3,6 +3,7 @@
 from aiogram.types import Message, FSInputFile, InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeyboardRemove
 from keyboards import generate_quiz_answers
 from database import get_question
+from config import logger
 
 async def send_welcome_message(message: Message):
     """
@@ -34,6 +35,7 @@ async def send_question(message: Message, question_number: int):
     
     kb = generate_quiz_answers(correct, [a1, a2, a3])
     photo_path = question_data[1]
+    logger.info(f"путь к фото: {photo_path}")
     try:
         await message.answer_photo(
             photo=FSInputFile(photo_path),
