@@ -27,10 +27,10 @@ async def send_question(message: Message, question_number: int):
         await message.answer(f"Ошибка: вопрос №{question_number} не найден.")
         return
     
-    # question_data = (num, photo, correct, a1, a2, a3, question_text)
+    # question_data = (num, photo, correct, a1, a2, a3, q_text)
     num, photo, correct, a1, a2, a3, q_text = question_data
     if not q_text:
-        q_text = f"Вопрос №{question_number}"  # fallback
+        q_text = f"Вопрос №{num}"  # fallback
     
     kb = generate_quiz_answers(correct, [a1, a2, a3])
 
