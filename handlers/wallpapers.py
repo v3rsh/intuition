@@ -5,6 +5,7 @@ from aiogram.fsm.context import FSMContext
 from states import BotState
 from keyboards import main_menu_kb, dynamic_wallpapers_menu, wallpapers_download_menu
 from database import get_user_by_id, update_user_loads, get_all_pics, get_pic_by_button
+from utils import send_welcome_message
 
 
 router = Router()
@@ -13,7 +14,7 @@ router = Router()
 async def choose_wallpaper_handler(message: Message, state: FSMContext):
     if message.text == "в начало":
         await state.set_state(BotState.MAIN_MENU)
-        await message.answer("Возврат в главное меню.", reply_markup=main_menu_kb())
+        await send_welcome_message(message)
         return
     
     # Ищем запись в Pics по нажатой кнопке (поле button)
@@ -72,9 +73,8 @@ async def download_wallpaper_handler(message: Message, state: FSMContext):
         )
     elif message.text == "в начало":
         await state.set_state(BotState.MAIN_MENU)
-        await message.answer("Возврат в главное меню.", reply_markup=main_menu_kb())
+        await send_welcome_message(message)
+        return
+
     else:
-        await message.answer(
-            "Нажмите 'Выбрать другие обои' или 'в начало'.",
-            reply_markup=wallpapers_download_menu()
-        )
+        await message.answer("Выберите действие")
