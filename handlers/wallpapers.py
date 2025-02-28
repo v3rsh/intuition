@@ -26,7 +26,7 @@ async def choose_wallpaper_handler(message: Message, state: FSMContext):
         try:
             await message.answer_document(
                 document=FSInputFile(big_file_path),
-                caption="Вот файл в большом разрешении",
+                caption="Лови обои в высоком разрешении",
                 reply_markup=wallpapers_download_menu()
             )
         except FileNotFoundError:
