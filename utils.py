@@ -51,23 +51,40 @@ def is_correct_answer(user_text: str, correct_text: str) -> bool:
     return user_text.strip().lower() == correct_text.strip().lower()
 
 
-async def send_final_inline(message: Message):
+async def send_final_inline(message: Message, two_buttons: bool = False):
     """
-    Отправляет первое финальное сообщение с inline-кнопкой (ссылка).
+    Отправляет первое финальное сообщение с удалением клавиатуры.
     """
     await message.answer(
             "Спасибо за игру!",
             reply_markup=ReplyKeyboardRemove()
         )
     """
-    Отправляет второе финальное сообщение с inline-кнопкой (ссылка).
+    Отправляем финальное inline-сообщение.
+    Если two_buttons=True, то [Ссылка, "в начало"].
+    Иначе только [Ссылка].
     """
-    kb = InlineKeyboardMarkup(
-        inline_keyboard=[[
-            InlineKeyboardButton(text="Перейти к результатам", url="https://example.com")
-        ]]
+    link_text="Ссылка"
+    link="https://example.com"
+    if two_buttons:
+        kb = InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text=link_text, url=link),
+                InlineKeyboardButton(text="в начало", callback_data="to_main")
+            ]]
+        )
+    else:
+        kb = InlineKeyboardMarkup(
+            inline_keyboard=[[
+                InlineKeyboardButton(text=link_text, url=link)
+            ]]
+        )
+
+    # Текст берём из предыдущей версии или свой
+    text = (
+        "Интересно узнать результаты? Наберись терпения — "
+        "ответы будут по ссылке ниже 5 марта! Не забудь проверить.\n"
+        "И помни, самое главное — доверять себе❤️"
     )
-    await message.answer(
-        "Не забудь заглянуть по ссылке 5 марта, чтобы узнать все результаты!",
-        reply_markup=kb
-    )
+
+    await message.answer(text, reply_markup=kb)

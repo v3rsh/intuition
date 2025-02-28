@@ -5,4 +5,3 @@ class BotState(StatesGroup):
     QUIZ = State()        # Режим викторины
     CHOOSE = State()      # Выбор обоев (мелкие)
     DOWNLOAD = State()    # Скачивание/отправка крупных обоев
-    RESULT = State()      # Результат (когда прогресс=10)

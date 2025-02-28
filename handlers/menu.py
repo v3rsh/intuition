@@ -8,7 +8,7 @@ from states import BotState
 from database import get_user_by_id, get_all_pics
 from keyboards import main_menu_kb, dynamic_wallpapers_menu
 from keyboards import result_inline_keyboard
-from utils import send_question
+from utils import send_question, send_final_inline
 
 router = Router()
 
@@ -31,11 +31,7 @@ async def main_menu_check_intuition(message: Message, state: FSMContext):
     progress = user[3]  # 0..10
     if progress >= 10:
         # Всё пройдено
-        await state.set_state(BotState.RESULT)
-        await message.answer(
-            "У вас уже пройдена вся викторина (10 вопросов)! Вот ваш результат:",
-            reply_markup=result_inline_keyboard()
-        )
+        await send_final_inline(message)
     else:
         # Меняем состояние на QUIZ
         await state.set_state(BotState.QUIZ)
