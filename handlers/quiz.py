@@ -38,20 +38,6 @@ async def quiz_handler(message: Message, state: FSMContext):
 
     progress = user[3]  # уже отвеченные вопросы (0..10)
 
-    # Если progress >= 10 => всё уже отвечено
-    if progress >= 10:
-        # Ставим MAIN_MENU (пусть остаётся в меню)
-        await state.set_state(BotState.MAIN_MENU)
-        # Можно убрать клавиатуру
-        await message.answer(
-            "Все вопросы уже отвечены!",
-            reply_markup=ReplyKeyboardRemove()
-        )
-        # Отправить финальное сообщение:
-        # допустим, если пользователь уже 2й раз сюда зашёл - показываем только 1 кнопку
-        await send_final_inline(message, two_buttons=False)
-        return
-
     # Текущий вопрос = progress+1
     question_number = progress + 1
     question_data = await get_question(question_number)
@@ -80,7 +66,6 @@ async def quiz_handler(message: Message, state: FSMContext):
             await send_question(message, next_q)
         else:
             # new_progress=10 => последний ответ
-            await state.set_state(BotState.RESULT)
             await send_final_inline(message, two_buttons=True)
 
     else:
