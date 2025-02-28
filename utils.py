@@ -33,10 +33,10 @@ async def send_question(message: Message, question_number: int):
         q_text = f"Вопрос №{num}"  # fallback
     
     kb = generate_quiz_answers(correct, [a1, a2, a3])
-
+    photo_path = question_data[1]
     try:
         await message.answer_photo(
-            photo=FSInputFile(photo),
+            photo=FSInputFile(photo_path),
             caption=q_text,
             reply_markup=kb
         )
