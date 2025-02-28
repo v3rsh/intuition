@@ -40,7 +40,7 @@ async def main_menu_check_intuition(message: Message, state: FSMContext):
         question_number = progress + 1
         await send_question(message, question_number)
 
-@router.message(BotState.MAIN_MENU, F.text == "сейчас не до игр")
+@router.message(BotState.MAIN_MENU, F.text == "пока не до игр...")
 async def main_menu_wallpapers(message: Message, state: FSMContext):
     """
     Переходим в состояние CHOOSE, отправляем миниатюры.
@@ -63,5 +63,7 @@ async def main_menu_wallpapers(message: Message, state: FSMContext):
 
     all_buttons = [row[1] for row in rows]  # row[1]=button
     kb = dynamic_wallpapers_menu(all_buttons)
-    await message.answer("Выберите обои из списка:", reply_markup=kb)
+    await message.answer("Самое главное — хорошее настроение! /n"
+                         "Лови 4 красивых заставки для телефона, пусть они поддерживают и вдохновляют тебя!")
     await message.answer_media_group(media=media)
+    await message.answer("Выберите обои из списка:", reply_markup=kb)
