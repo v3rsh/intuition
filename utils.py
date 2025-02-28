@@ -51,7 +51,7 @@ def is_correct_answer(user_text: str, correct_text: str) -> bool:
     return user_text.strip().lower() == correct_text.strip().lower()
 
 
-async def send_final_inline(message: Message, two_buttons: bool = False):
+async def send_final_inline(message: Message, two_buttons: bool = True):
     """
     Отправляет первое финальное сообщение с удалением клавиатуры.
     """
