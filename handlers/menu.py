@@ -54,13 +54,9 @@ async def main_menu_wallpapers(message: Message, state: FSMContext):
         return
 
     media = []
-    for i, (pic_id, button, pic_url, file_url) in enumerate(rows):
+    for i, (pic, button, pic, file) in enumerate(rows):
         caption = f"Обои: {button}"
-        if pic_url.startswith("http"):
-            media.append(InputMediaPhoto(media=pic_url, caption=caption))
-        else:
-            media.append(InputMediaPhoto(media=FSInputFile(pic_url), caption=caption))
-
+        media.append(InputMediaPhoto(media=FSInputFile(pic), caption=caption))
         if i == 9:
             break
 
