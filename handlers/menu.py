@@ -60,8 +60,8 @@ async def main_menu_wallpapers(message: Message, state: FSMContext):
         if i == 9:
             break
 
-    await message.answer_media_group(media=media)
 
     all_buttons = [row[1] for row in rows]  # row[1]=button
     kb = dynamic_wallpapers_menu(all_buttons)
     await message.answer("Выберите обои из списка:", reply_markup=kb)
+    await message.answer_media_group(media=media)
