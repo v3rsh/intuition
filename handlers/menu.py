@@ -28,7 +28,7 @@ async def main_menu_check_intuition(message: Message, state: FSMContext):
         await message.answer("Ошибка: пользователь не найден. Нажмите /start")
         return
     
-    progress = user[3]  # 0..10
+    progress = user[4]  # 0..10
     if progress >= 10:
         # Всё пройдено
         await send_final_inline(message)
