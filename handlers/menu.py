@@ -63,7 +63,7 @@ async def main_menu_wallpapers(message: Message, state: FSMContext):
 
     all_buttons = [row[1] for row in rows]  # row[1]=button
     kb = dynamic_wallpapers_menu(all_buttons)
-    await message.answer("Самое главное — хорошее настроение! /n"
+    await message.answer("Самое главное — хорошее настроение! \n"
                          "Лови 4 красивых заставки для телефона, пусть они поддерживают и вдохновляют тебя!")
     await message.answer_media_group(media=media)
     await message.answer("Выберите обои из списка:", reply_markup=kb)
