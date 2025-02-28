@@ -66,8 +66,8 @@ async def send_final_inline(message: Message, two_buttons: bool = True):
     Если two_buttons=True, то [Ссылка, "в начало"].
     Иначе только [Ссылка].
     """
-    link_text="Ссылка"
-    link="https://example.com"
+    link_text="Space"
+    link="https://space.beeline.ru/News/Pages/2025/news_f05f751162024409807122436ccf811a.aspx"
     if two_buttons:
         kb = InlineKeyboardMarkup(
             inline_keyboard=[[
