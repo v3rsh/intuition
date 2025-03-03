@@ -40,7 +40,7 @@ async def main_menu_check_intuition(message: Message, state: FSMContext):
         question_number = progress + 1
         await send_question(message, question_number)
 
-@router.message(BotState.MAIN_MENU, F.text == "пока не до игр...")
+@router.message(BotState.MAIN_MENU, F.text == "скачать тематические обои")
 async def main_menu_wallpapers(message: Message, state: FSMContext):
     """
     Переходим в состояние CHOOSE, отправляем миниатюры.

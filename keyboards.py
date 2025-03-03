@@ -10,12 +10,12 @@ def main_menu_kb():
     """
     Главное меню: две кнопки
     [проверить интуицию]
-    [сейчас не до игр]
+    [скачать тематические обои]
     """
     return ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="проверить интуицию")],
-            [KeyboardButton(text="пока не до игр...")]
+            [KeyboardButton(text="скачать тематические обои")]
         ],
         resize_keyboard=True
     )
